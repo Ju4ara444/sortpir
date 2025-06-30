@@ -1,3 +1,3 @@
 ﻿  Piramida.c
-C:\Users\Admin\OneDrive\Рабочий стол\практика\sortpir\sortpir\Piramida.c(88,21): warning C4244: функция: преобразование "time_t" в "unsigned int", возможна потеря данных
-  sortpir.vcxproj -> C:\Users\Admin\OneDrive\Рабочий стол\практика\sortpir\Debug\sortpir.exe
+C:\sortpit-interface\sortpir\sortpir\sortpir\Piramida.c(225,11): warning C4244: функция: преобразование "time_t" в "unsigned int", возможна потеря данных
+  sortpir.vcxproj -> C:\sortpit-interface\sortpir\sortpir\Debug\sortpir.exe
