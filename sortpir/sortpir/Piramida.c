@@ -6,81 +6,218 @@
 #include <locale.h>
 #include <windows.h>
 
-// Функция для перестройки кучи (с параметром порядка сортировки)
-void heapify(int arr[], int n, int i, int ascending) {
-    int largest = i;
+// Функция для создания имени файла с текущей датой и временем
+void random_file(char* filename, char* type) {
+    time_t now = time(NULL);
+    struct tm* t = localtime(&now);
+    sprintf(filename, "%s_%04d%02d%02d_%02d%02d%02d.txt",
+        type,
+        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+        t->tm_hour, t->tm_min, t->tm_sec);
+}
+
+// Функция для записи массива в файл
+void write_file(int arr[], int size, char* type) {
+    char filename[100];
+    random_file(filename, type);
+
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Не удалось создать файл!\n");
+        return;
+    }
+
+    fprintf(file, "Массив из %d элементов:\n", size);
+    for (int i = 0; i < size; i++) {
+        fprintf(file, "%d ", arr[i]);
+    }
+    fprintf(file, "\n");
+
+    fclose(file);
+    printf("Массив записан в файл: %s\n", filename);
+}
+
+// Функция для сортировки кучи
+void fix_heap(int arr[], int size, int i, int up) {
+    int big = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
 
-    if (ascending) {
-        // Сортировка по возрастанию (максимальная куча)
-        if (left < n && arr[left] > arr[largest])
-            largest = left;
-
-        if (right < n && arr[right] > arr[largest])
-            largest = right;
+    if (up) {
+        if (left < size && arr[left] > arr[big])
+            big = left;
+        if (right < size && arr[right] > arr[big])
+            big = right;
     }
     else {
-        // Сортировка по убыванию (минимальная куча)
-        if (left < n && arr[left] < arr[largest])
-            largest = left;
-
-        if (right < n && arr[right] < arr[largest])
-            largest = right;
+        if (left < size && arr[left] < arr[big])
+            big = left;
+        if (right < size && arr[right] < arr[big])
+            big = right;
     }
 
-    if (largest != i) {
+    if (big != i) {
         int temp = arr[i];
-        arr[i] = arr[largest];
-        arr[largest] = temp;
-        heapify(arr, n, largest, ascending);
+        arr[i] = arr[big];
+        arr[big] = temp;
+        fix_heap(arr, size, big, up);
     }
 }
 
-// Функция пирамидальной сортировки с выбором направления
-void heapSort(int arr[], int n, int ascending) {
-    // Построение кучи (перегруппируем массив)
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i, ascending);
+// Основная функция сортировки
+void main_sort_heap(int arr[], int size, int up) {
+    for (int i = size / 2 - 1; i >= 0; i--)
+        fix_heap(arr, size, i, up);
 
-    // Один за другим извлекаем элементы из кучи
-    for (int i = n - 1; i >= 0; i--) {
-        // Перемещаем текущий корень в конец
+    for (int i = size - 1; i >= 0; i--) {
         int temp = arr[0];
         arr[0] = arr[i];
         arr[i] = temp;
 
-        // вызываем heapify на уменьшенной куче
-        heapify(arr, i, 0, ascending);
+        fix_heap(arr, i, 0, up);
     }
 }
 
-// Функция линейного поиска
-void linearSearch(int arr[], int n) {
-    int target, found = 0;
+// Простой поиск по массиву
+void simple_search(int arr[], int size) {
+    int num, found = 0;
     printf("Введите число для поиска: ");
-    scanf("%d", &target);
+    scanf("%d", &num);
 
-    printf("Найдено на позициях: ");
-    for (int i = 0; i < n; i++) {
-        if (arr[i] == target) {
-            printf("%d ", i);
+    printf("Число найдено на позициях: ");
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == num) {
+            printf("%d ", i + 1);
             found = 1;
         }
     }
 
     if (!found) {
-        printf("число не найдено");
+        printf("не найдено");
     }
     printf("\n");
 }
 
-// Функция вывода массива
-void printArray(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
+// Быстрый поиск (для отсортированного массива)
+void fast_search(int arr[], int size, int up) {
+    int num;
+    printf("Введите число для поиска: ");
+    scanf("%d", &num);
+
+    int start = 0, end = size - 1;
+    int found = 0;
+
+    printf("Число найдено на позициях: ");
+    while (start <= end) {
+        int mid = start + (end - start) / 2;
+
+        if (arr[mid] == num) {
+            int i = mid;
+            while (i >= 0 && arr[i] == num) {
+                printf("%d ", i + 1);
+                i--;
+            }
+            i = mid + 1;
+            while (i < size && arr[i] == num) {
+                printf("%d ", i + 1);
+                i++;
+            }
+            found = 1;
+            break;
+        }
+        if ((up && arr[mid] < num) || (!up && arr[mid] > num)) {
+            start = mid + 1;
+        }
+        else {
+            end = mid - 1;
+        }
+    }
+
+    if (!found) {
+        printf("не найдено");
+    }
+    printf("\n");
+}
+
+// Вывод массива на экран
+void show_array(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
+}
+
+// Предложение сохранить массив в файл
+void save_array(int arr[], int size, char* type) {
+    char answer;
+    int input = 0;
+
+    do {
+        printf("\nСохранить массив в файл? (y/n): ");
+        scanf(" %c", &answer);
+
+        while (getchar() != '\n');
+
+        if (answer == 'y' || answer == 'Y') {
+            write_file(arr, size, type);
+            input = 1;
+        }
+        else if (answer == 'n' || answer == 'N') {
+            input = 1;
+        }
+        else {
+            printf("Ошибка: введите 'y' или 'n'!\n");
+        }
+    } while (!input);
+}
+
+// Предложение отсортировать массив
+void sort_array(int arr[], int size, int* sorted, int* order) {
+    char answer;
+    int input = 0;
+
+    do {
+        printf("\nОтсортировать массив? (y/n): ");
+        scanf(" %c", &answer);
+
+        while (getchar() != '\n');
+
+        if (answer == 'y' || answer == 'Y') {
+            int up;
+            int sort_input = 0;
+
+            do {
+                printf("\nКак сортировать? (1 - по возрастанию, 0 - по убыванию): ");
+                scanf("%d", &up);
+
+                while (getchar() != '\n');
+
+                if (up == 0 || up == 1) {
+                    main_sort_heap(arr, size, up);
+                    *sorted = 1;
+                    *order = up;
+
+                    printf("\nМассив после сортировки (%s):\n",
+                        up ? "по возрастанию" : "по убыванию");
+                    show_array(arr, size);
+
+                    save_array(arr, size, up ? "sorted_up" : "sorted_down");
+                    sort_input = 1;
+                }
+                else {
+                    printf("Ошибка: введите 0 или 1!\n");
+                }
+            } while (!sort_input);
+
+            input = 1;
+        }
+        else if (answer == 'n' || answer == 'N') {
+            input = 1;
+        }
+        else {
+            printf("Ошибка: введите 'y' или 'n'!\n");
+        }
+    } while (!input);
 }
 
 int main() {
@@ -112,158 +249,135 @@ int main() {
     printf("\n\n  Загрузка...\n");
     Sleep(2000);
 
-    int n, choice, min_val, max_val, search_choice, sort_order;
+    int size = 0, choice, min, max, search_type;
     int* arr = NULL;
+    int sorted = 0;
+    int sort_order = 1;
 
     while (1) {
         system("cls");
 
-        // Выбор режима ввода с проверкой
-        while (1) {
-            printf("|--ГЛАВНОЕ МЕНЮ--|\n\n");
-            printf("Выберите способ заполнения массива:\n");
-            printf("1 - Ввод вручную\n");
-            printf("2 - Случайная генерация\n");
-            printf("3 - Работа с файлами(в процессе)\n");
-            printf("0 - Выход из программы\n");
-            printf("Ваш выбор: ");
-            if (scanf("%d", &choice) != 1) {
-                printf("Ошибка: введите число!\n");
-                while (getchar() != '\n');
-                Sleep(1000);
-                system("cls");
-                continue;
-            }
+        printf("|=== Главное меню ===|\n\n");
+        printf("1 - Ввести массив вручную\n");
+        printf("2 - Создать случайный массив\n");
+        printf("3 - Найти число в массиве\n");
+        printf("0 - Выйти из программы\n");
+        printf("Выберите действие: ");
 
-            if (choice >= 0 && choice <= 2) {
-                break;
-            }
-            else {
-                printf("\nОшибка: выберите пункт из меню (0-2)!\n");
-                printf("Нажмите любую клавишу для продолжения...");
-                while (getchar() != '\n');
-                getchar();
-                system("cls");
-            }
-        }
+        scanf("%d", &choice);
 
-        // Обработка выхода
         if (choice == 0) {
             system("cls");
             printf("\nПрограмма завершена. До свидания!\n");
             break;
         }
 
-        // Ввод размера массива с проверкой
-        while (1) {
-            printf("Введите количество элементов: ");
-            if (scanf("%d", &n) != 1) {
-                printf("Ошибка: введите число!\n");
-                while (getchar() != '\n');
-                continue;
+        switch (choice) {
+        case 1: // Ручной ввод
+        case 2: // Случайный массив
+        {
+            while (1) {
+                printf("Введите размер массива: ");
+                scanf("%d", &size);
+
+                if (size > 0) break;
+                else printf("Ошибка: размер должен быть больше 0!\n");
+            }
+            if (arr != NULL) {
+                free(arr);
             }
 
-            if (n > 0) {
+            arr = (int*)malloc(size * sizeof(int));
+            if (arr == NULL) {
+                printf("Ошибка: не удалось выделить память!\n");
+                return 1;
+            }
+
+            if (choice == 1) {
+                printf("Введите %d чисел:\n", size);
+                for (int i = 0; i < size; i++) {
+                    printf("Элемент %d: ", i + 1);
+                    scanf("%d", &arr[i]);
+                }
+            }
+            else {
+                printf("Введите минимальное число: ");
+                scanf("%d", &min);
+                printf("Введите максимальное число: ");
+                scanf("%d", &max);
+
+                for (int i = 0; i < size; i++) {
+                    arr[i] = rand() % (max - min + 1) + min;
+                }
+            }
+
+            sorted = 0;
+            printf("\nВаш массив:\n");
+            show_array(arr, size);
+
+            save_array(arr, size, "array");
+            sort_array(arr, size, &sorted, &sort_order);
+
+            printf("\nНажмите Enter чтобы продолжить...");
+            getchar();
+            getchar();
+            break;
+        }
+
+        case 3: // Поиск числа
+        {
+            if (arr == NULL || size == 0) {
+                printf("Ошибка: массив не создан! Сначала создайте массив.\n");
+                printf("\nНажмите Enter чтобы продолжить...");
+                getchar();
+                getchar();
                 break;
             }
-            else {
-                printf("Ошибка: количество элементов должно быть положительным!\n");
-            }
-        }
 
-        // Выделение памяти
-        arr = (int*)malloc(n * sizeof(int));
-        if (arr == NULL) {
-            printf("Ошибка выделения памяти!\n");
-            return 1;
-        }
+            system("cls");
+            printf("|=== Поиск числа ===|\n\n");
+            printf("Текущий массив:\n");
+            show_array(arr, size);
 
-        // Заполнение массива
-        if (choice == 1) {
-            printf("Введите %d элементов:\n", n);
-            for (int i = 0; i < n; i++) {
-                printf("Элемент %d: ", i + 1);
-                scanf("%d", &arr[i]);
-            }
-        }
-        else if (choice == 2) {
-            // Ввод диапазона с проверкой
-            while (1) {
-                printf("Введите нижнюю границу диапазона: ");
-                scanf("%d", &min_val);
-                printf("Введите верхнюю границу диапазона: ");
-                scanf("%d", &max_val);
+            printf("\n1 - Обычный поиск (для любого массива)\n");
+            printf("2 - Быстрый поиск (только для отсортированного)\n");
+            printf("0 - Назад\n");
+            printf("Выберите тип поиска: ");
 
-                if (min_val < max_val) {
-                    break;
+            scanf("%d", &search_type);
+
+            switch (search_type) {
+            case 1:
+                simple_search(arr, size);
+                break;
+            case 2:
+                if (!sorted) {
+                    printf("\nОшибка: массив не отсортирован!\n");
                 }
                 else {
-                    printf("Ошибка: нижняя граница должна быть меньше верхней!\n");
+                    fast_search(arr, size, sort_order);
                 }
+                break;
+            case 0:
+                break;
+            default:
+                printf("Неверный выбор!\n");
             }
 
-            for (int i = 0; i < n; i++) {
-                arr[i] = rand() % (max_val - min_val + 1) + min_val;
-            }
+            printf("\nНажмите Enter чтобы продолжить...");
+            getchar();
+            getchar();
+            break;
         }
 
-        // Вывод исходного массива
-        printf("\nИсходный массив:\n");
-        printArray(arr, n);
-
-        // Поиск в неотсортированном массиве
-        int valid_input = 0;
-        do {
-            printf("\nХотите выполнить поиск в неотсортированном массиве? (1 - Да, 0 - Нет): ");
-            if (scanf("%d", &search_choice) != 1) {
-                printf("Ошибка: введите число (0 или 1)!\n");
-                while (getchar() != '\n');
-                continue;
-            }
-
-            if (search_choice == 0 || search_choice == 1) {
-                valid_input = 1;
-            }
-            else {
-                printf("Ошибка: введите 0 или 1!\n");
-            }
-        } while (!valid_input);
-
-        if (search_choice == 1) {
-            linearSearch(arr, n);
+        default:
+            printf("Неверный выбор! Попробуйте снова.\n");
+            Sleep(1000);
         }
+    }
 
-        // Выбор порядка сортировки
-        valid_input = 0;
-        do {
-            printf("\nВыберите порядок сортировки (1 - по возрастанию, 0 - по убыванию): ");
-            if (scanf("%d", &sort_order) != 1) {
-                printf("Ошибка: введите число (0 или 1)!\n");
-                while (getchar() != '\n');
-                continue;
-            }
-
-            if (sort_order == 0 || sort_order == 1) {
-                valid_input = 1;
-            }
-            else {
-                printf("Ошибка: введите 0 или 1!\n");
-            }
-        } while (!valid_input);
-
-        // Сортировка массива
-        heapSort(arr, n, sort_order);
-
-        // Вывод отсортированного массива
-        printf("\nОтсортированный массив (%s):\n", sort_order ? "по возрастанию" : "по убыванию");
-        printArray(arr, n);
-
-        // Ожидание перед выходом
-        printf("\nНажмите Enter для продолжения...");
-        while (getchar() != '\n');
-        getchar();
-
-        // Освобождение памяти
+    // Освобождение памяти перед выходом
+    if (arr != NULL) {
         free(arr);
     }
 
