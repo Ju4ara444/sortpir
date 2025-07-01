@@ -27,7 +27,6 @@ void write_file(int arr[], int size, char* type) {
         return;
     }
 
-    fprintf(file, "Массив из %d элементов:\n", size);
     for (int i = 0; i < size; i++) {
         fprintf(file, "%d ", arr[i]);
     }
@@ -336,8 +335,14 @@ int main() {
 
             system("cls");
             printf("|=== Поиск числа ===|\n\n");
-            printf("Текущий массив:\n");
-            show_array(arr, size);
+
+            if (size <= 10000) {
+                printf("Текущий массив:\n");
+                show_array(arr, size);
+            }
+            else {
+                printf("Массив не выводится на экран из-за большого количества элементов (%d элемент.).\n", size);
+            }
 
             printf("\n1 - Обычный поиск (для любого массива)\n");
             printf("2 - Быстрый поиск (только для отсортированного)\n");
