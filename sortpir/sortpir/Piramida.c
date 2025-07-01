@@ -1,3 +1,4 @@
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -192,18 +193,13 @@ void sort_array(int arr[], int size, int* sorted, int* order) {
                 while (getchar() != '\n');
 
                 if (up == 0 || up == 1) {
-                    clock_t start = clock();
                     main_sort_heap(arr, size, up);
-                    clock_t end = clock();
-                    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-
                     *sorted = 1;
                     *order = up;
 
                     printf("\nМассив после сортировки (%s):\n",
                         up ? "по возрастанию" : "по убыванию");
                     show_array(arr, size);
-                    printf("Время сортировки: %.6f секунд\n", time_spent);
 
                     save_array(arr, size, up ? "sorted_up" : "sorted_down");
                     sort_input = 1;
@@ -257,7 +253,6 @@ int main() {
     int* arr = NULL;
     int sorted = 0;
     int sort_order = 1;
-    clock_t program_start = clock();
 
     while (1) {
         system("cls");
@@ -273,52 +268,12 @@ int main() {
 
         if (choice == 0) {
             system("cls");
-            clock_t program_end = clock();
-            double program_time = (double)(program_end - program_start) / CLOCKS_PER_SEC;
-            printf("\nПрограмма завершена. Общее время работы: %.6f секунд\n", program_time);
-            printf("До свидания!\n");
+            printf("\nПрограмма завершена. До свидания!\n");
             break;
         }
 
         switch (choice) {
         case 1: // Ручной ввод
-        {
-            while (1) {
-                printf("Введите размер массива: ");
-                scanf("%d", &size);
-
-                if (size > 0) break;
-                else printf("Ошибка: размер должен быть больше 0!\n");
-            }
-            if (arr != NULL) {
-                free(arr);
-            }
-
-            arr = (int*)malloc(size * sizeof(int));
-            if (arr == NULL) {
-                printf("Ошибка: не удалось выделить память!\n");
-                return 1;
-            }
-
-            printf("Введите %d чисел:\n", size);
-            for (int i = 0; i < size; i++) {
-                printf("Элемент %d: ", i + 1);
-                scanf("%d", &arr[i]);
-            }
-
-            sorted = 0;
-            printf("\nВаш массив:\n");
-            show_array(arr, size);
-
-            save_array(arr, size, "array");
-            sort_array(arr, size, &sorted, &sort_order);
-
-            printf("\nНажмите Enter чтобы продолжить...");
-            getchar();
-            getchar();
-            break;
-        }
-
         case 2: // Случайный массив
         {
             while (1) {
@@ -338,27 +293,27 @@ int main() {
                 return 1;
             }
 
-            printf("Введите минимальное число: ");
-            scanf("%d", &min);
-            printf("Введите максимальное число: ");
-            scanf("%d", &max);
-
-            clock_t gen_start = clock();
-            for (int i = 0; i < size; i++) {
-                arr[i] = rand() % (max - min + 1) + min;
+            if (choice == 1) {
+                printf("Введите %d чисел:\n", size);
+                for (int i = 0; i < size; i++) {
+                    printf("Элемент %d: ", i + 1);
+                    scanf("%d", &arr[i]);
+                }
             }
-            clock_t gen_end = clock();
-            double gen_time = (double)(gen_end - gen_start) / CLOCKS_PER_SEC;
+            else {
+                printf("Введите минимальное число: ");
+                scanf("%d", &min);
+                printf("Введите максимальное число: ");
+                scanf("%d", &max);
+
+                for (int i = 0; i < size; i++) {
+                    arr[i] = rand() % (max - min + 1) + min;
+                }
+            }
 
             sorted = 0;
             printf("\nВаш массив:\n");
-            if (size <= 10000) {
-                show_array(arr, size);
-            }
-            else {
-                printf("Массив не выводится на экран из-за большого количества элементов (%d элемент.).\n", size);
-            }
-            printf("Время генерации массива: %.6f секунд\n", gen_time);
+            show_array(arr, size);
 
             save_array(arr, size, "array");
             sort_array(arr, size, &sorted, &sort_order);
@@ -398,24 +353,15 @@ int main() {
             scanf("%d", &search_type);
 
             switch (search_type) {
-            case 1: {
-                clock_t start = clock();
+            case 1:
                 simple_search(arr, size);
-                clock_t end = clock();
-                double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-                printf("Время выполнения простого поиска: %.6f секунд\n", time_spent);
                 break;
-            }
             case 2:
                 if (!sorted) {
                     printf("\nОшибка: массив не отсортирован!\n");
                 }
                 else {
-                    clock_t start = clock();
                     fast_search(arr, size, sort_order);
-                    clock_t end = clock();
-                    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-                    printf("Время выполнения быстрого поиска: %.6f секунд\n", time_spent);
                 }
                 break;
             case 0:
