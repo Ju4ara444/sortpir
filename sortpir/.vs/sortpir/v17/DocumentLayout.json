@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\sortpit-interface\\sortpir\\sortpir\\",
+  "WorkspaceRootPath": "C:\\praktika\\sortpir\\sortpir\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DDDD8B16-DEF4-46AC-9CA3-CB62151BA110}|sortpir\\sortpir.vcxproj|C:\\sortpit-interface\\sortpir\\sortpir\\sortpir\\Piramida.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{DDDD8B16-DEF4-46AC-9CA3-CB62151BA110}|sortpir\\sortpir.vcxproj|C:\\praktika\\sortpir\\sortpir\\sortpir\\Piramida.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{DDDD8B16-DEF4-46AC-9CA3-CB62151BA110}|sortpir\\sortpir.vcxproj|solutionrelative:sortpir\\Piramida.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -20,14 +20,24 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Piramida.c",
-              "DocumentMoniker": "C:\\sortpit-interface\\sortpir\\sortpir\\sortpir\\Piramida.c",
+              "DocumentMoniker": "C:\\praktika\\sortpir\\sortpir\\sortpir\\Piramida.c",
               "RelativeDocumentMoniker": "sortpir\\Piramida.c",
-              "ToolTip": "C:\\sortpit-interface\\sortpir\\sortpir\\sortpir\\Piramida.c",
+              "ToolTip": "C:\\praktika\\sortpir\\sortpir\\sortpir\\Piramida.c",
               "RelativeToolTip": "sortpir\\Piramida.c",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAJoBAAAAAAAAAAAiwLYBAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
               "WhenOpened": "2025-06-30T18:28:25.08Z",
               "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 207,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             }
           ]
         }
